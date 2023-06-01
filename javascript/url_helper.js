@@ -11,7 +11,7 @@ async function open_model(event, search_term){
     }
 	
 	// hidden text input as arg to python
-	let js_msg_txtbox = gradioApp().querySelector("#uh_js_lora_filename_txt  > label > textarea");
+	let js_msg_txtbox = gradioApp().querySelector("#uh_js_lora_search_name_txt  > label > textarea");
     if (js_msg_txtbox && search_term) {
         js_msg_txtbox.value = search_term;
         updateInput(js_msg_txtbox);

@@ -11,47 +11,31 @@ import shutil
 import re
 import modules
 from modules import script_callbacks
+from modules import hashes
 from pprint import pprint
         
 def on_before_component(component, **kwargs):
     if ('elem_id' in kwargs) and (kwargs["elem_id"] == "txt2img_prompt"):
-        print("## ## ## TEST COMP ## ## ##")
-        js_lora_filename_txt = gr.Textbox(label="Request Msg From Js", elem_id="uh_js_lora_filename_txt", visible=False)
+        js_lora_search_name_txt = gr.Textbox(label="Request Msg From Js", elem_id="uh_js_lora_search_name_txt", visible=False)
 
         js_open_lora_btn = gr.Button(value="Open Lora Url", visible=False, elem_id="uh_js_open_lora_btn")
-        js_open_lora_btn.click(fn=open_model_url_by_file, inputs=[js_lora_filename_txt])
-    
-def read_chunks(file, size=io.DEFAULT_BUFFER_SIZE):
-    while True:
-        chunk = file.read(size)
-        if not chunk:
-            break
-        yield chunk
+        js_open_lora_btn.click(fn=open_model_url_by_file, inputs=[js_lora_search_name_txt])
 
-def gen_file_sha256(filname):
-    print("Use Memory Optimized SHA256")
-    blocksize=1 << 20
-    h = hashlib.sha256()
-    length = 0
-    with open(os.path.realpath(filname), 'rb') as f:
-        for block in read_chunks(f, size=blocksize):
-            length += len(block)
-            h.update(block)
+def open_model_url_by_file(search_name):
 
-    hash_value =  h.hexdigest()
-    print("sha256: " + hash_value)
-    return hash_value
+    print("Opening model: " + search_name)
 
-def open_model_url_by_file(filename):
-
-    if filename[:1] == "/":
-        filename = filename[1:]
+    if search_name[:1] == "/":
+        search_name = search_name[1:]
 
     root_path = os.getcwd()
-    path = os.path.join(root_path, "models", "Lora", filename)
-    print("Calculating SHA256 for" + path)
+    filename = os.path.join(root_path, "models", "Lora", search_name)
+
+    name = os.path.splitext(os.path.basename(filename))[0] # name is just base filename without extension
     
-    model_hash = gen_file_sha256(path)
+    # use webui hash function to get cacheing
+    model_hash = str(hashes.sha256(filename, "lora/" + name, use_addnet_hash=False)) # civitai wants regular hash
+    
     modelId = get_model_id_from_hash(model_hash)
     
     if(modelId):
