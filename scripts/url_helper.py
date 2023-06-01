@@ -16,21 +16,18 @@ from pprint import pprint
 def on_before_component(component, **kwargs):
     if ('elem_id' in kwargs) and (kwargs["elem_id"] == "txt2img_prompt"):
         print("## ## ## TEST COMP ## ## ##")
-        js_lora_filename_txt = gr.Textbox(label="Request Msg From Js", elem_id="ch_js_lora_filename_txt", visible=False)
+        js_lora_filename_txt = gr.Textbox(label="Request Msg From Js", elem_id="uh_js_lora_filename_txt", visible=False)
 
-        js_open_lora_btn = gr.Button(value="Open Lora Url", visible=False, elem_id="ch_js_open_lora_btn")
+        js_open_lora_btn = gr.Button(value="Open Lora Url", visible=False, elem_id="uh_js_open_lora_btn")
         js_open_lora_btn.click(fn=open_model_url_by_file, inputs=[js_lora_filename_txt])
-        
     
 def read_chunks(file, size=io.DEFAULT_BUFFER_SIZE):
-    """Yield pieces of data from a file-like object until EOF."""
     while True:
         chunk = file.read(size)
         if not chunk:
             break
         yield chunk
 
-# Now, hashing use the same way as pip's source code.
 def gen_file_sha256(filname):
     print("Use Memory Optimized SHA256")
     blocksize=1 << 20
@@ -43,9 +40,7 @@ def gen_file_sha256(filname):
 
     hash_value =  h.hexdigest()
     print("sha256: " + hash_value)
-    print("length: " + str(length))
     return hash_value
-
 
 def open_model_url_by_file(filename):
 
@@ -75,9 +70,5 @@ def get_model_id_from_hash(model_hash):
         print("Model not found in CivitAi DB")
         return None
 
-
-
-
-
-
+# Add the callback!!
 script_callbacks.on_before_component(on_before_component)

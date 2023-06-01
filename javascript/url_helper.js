@@ -1,20 +1,18 @@
 "use strict";
 
-let mine_updating = false;
+let inited = false;
 
 async function open_model(event, search_term){
 	
-	
-	let lora_btn = gradioApp().getElementById("ch_js_open_lora_btn")
+	// hidden button to kick off python
+	let lora_btn = gradioApp().getElementById("uh_js_open_lora_btn")
 	if (!lora_btn) {
         return
     }
 	
-	let js_msg_txtbox = gradioApp().querySelector("#ch_js_lora_filename_txt  > label > textarea");
+	// hidden text input as arg to python
+	let js_msg_txtbox = gradioApp().querySelector("#uh_js_lora_filename_txt  > label > textarea");
     if (js_msg_txtbox && search_term) {
-		
-		console.log("found text box " + search_term);
-        // fill to msg box
         js_msg_txtbox.value = search_term;
         updateInput(js_msg_txtbox);
     }
@@ -30,10 +28,9 @@ async function open_model(event, search_term){
 }
 
 onUiUpdate(() => {		
-	if(mine_updating) {
+	if(inited) {
 		return;
 	}
-
 	
 	let cardid_suffix = "cards";
 	let tab_prefix_list = ["txt2img", "img2img"];
@@ -46,7 +43,7 @@ onUiUpdate(() => {
 	let extra_network_node = null;
 	let cards = null;
 	
-	extra_network_id = "txt2img"+"_"+"lora"+"_"+cardid_suffix;
+	extra_network_id = "txt2img"+"_"+"lora"+"_"+cardid_suffix; // TODO Expand this for other folders
 	
 	extra_network_node = gradioApp().getElementById(extra_network_id);
 	
@@ -61,11 +58,10 @@ onUiUpdate(() => {
 	
 		let btn = card.querySelector(".open-button")
 		if(btn) {
-			console.log("Arrows already added");
-			return; // already added them
+			return; // already added them (inited var ~should~ handle this already)
 		}
 		
-		search_term_node = card.querySelector(".actions .additional .search_term"); //TODO use replace preview filename instead
+		search_term_node = card.querySelector(".actions .additional .search_term");
 		if (!search_term_node){
 			console.log("can not find search_term node for cards in " + extra_network_id);
 			continue;
@@ -78,7 +74,7 @@ onUiUpdate(() => {
 			continue;
 		}
 		
-		mine_updating = true;
+		inited = true;
 
 		btn = document.createElement("div");
 		btn.classList.add('open-button');
@@ -88,8 +84,6 @@ onUiUpdate(() => {
 		card.appendChild(btn);
 	}
 });
-
-
 
 function updateInput(target) {
     let e = new Event("input", {bubbles: true});
