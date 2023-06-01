@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+__pycache__/
+settings.txt
+settings_dev.txt
+database.sqlite
+dev/
+tmp/
+service-account-file.json
+export/

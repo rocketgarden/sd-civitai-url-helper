@@ -1,0 +1,18 @@
+.extra-network-cards .card:hover .open-button, .extra-network-thumbs .card:hover .open-button{
+    display: inline-block;
+}
+.extra-network-cards .card .open-button:hover, .extra-network-thumbs .card .open-button:hover{
+    color: red;
+}
+.extra-network-cards .card .open-button, .extra-network-thumbs .card .open-button{
+    display: none;
+    position: absolute;
+    left: 0;
+    color: white;
+    text-shadow: 2px 2px 3px black;
+    padding: 0.25em;
+    font-size: 22pt;
+}
+.extra-network-cards .card .open-button:before, .extra-network-thumbs .card .open-button:before{
+    content: "🡕";
+}
