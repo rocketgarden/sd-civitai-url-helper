@@ -30,16 +30,20 @@ def open_model_url_by_file(search_name):
 
     root_path = os.getcwd()
     filename = os.path.join(root_path, "models", "Lora", search_name)
+    
+    if(not os.path.isfile(filename)):
+        print("Model at " + filename + "no longer exists!")
+        return
 
     name = os.path.splitext(os.path.basename(filename))[0] # name is just base filename without extension
     
     # use webui hash function to get cacheing
     model_hash = str(hashes.sha256(filename, "lora/" + name, use_addnet_hash=False)) # civitai wants regular hash
     
-    modelId = get_model_id_from_hash(model_hash)
+    modelId, versionId = get_model_id_from_hash(model_hash)
     
     if(modelId):
-        url = "https://civitai.com/models/" + modelId
+        url = "https://civitai.com/models/" + modelId + "?modelVersionId=" + versionId
         webbrowser.open_new_tab(url)
     
 
@@ -47,12 +51,13 @@ def get_model_id_from_hash(model_hash):
     response = requests.get("https://civitai.com/api/v1/model-versions/by-hash/" + model_hash).json()
     if('modelId' in response):
         modelId = str(response['modelId'])
+        versionId = str(response['id'])
     
-        print("Found Model ID: " + modelId)
-        return modelId
+        print("Found Model ID: " + modelId + " : " + versionId )
+        return (modelId, versionId)
     else:
         print("Model not found in CivitAi DB")
-        return None
+        return (None, None)
 
 # Add the callback!!
 script_callbacks.on_before_component(on_before_component)
