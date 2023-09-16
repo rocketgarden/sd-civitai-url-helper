@@ -67,8 +67,8 @@ onUiUpdate(() => {
 			continue;
 		}
 
-		// get search_term
-		search_term = search_term_node.innerHTML;
+		// get search_term - remove last chunk of text since that's a hash code now
+		search_term = search_term_node.innerHTML.split(' ').slice(0, -1).join(' ');
 		if (!search_term) {
 			console.log("search_term is empty for cards in " + extra_network_id);
 			continue;

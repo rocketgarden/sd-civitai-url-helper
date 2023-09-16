@@ -13,6 +13,7 @@ import modules
 from modules import script_callbacks
 from modules import hashes
 from pprint import pprint
+from pathlib import Path
         
 def on_before_component(component, **kwargs):
     if ('elem_id' in kwargs) and (kwargs["elem_id"] == "txt2img_prompt"):
@@ -23,19 +24,22 @@ def on_before_component(component, **kwargs):
 
 def open_model_url_by_file(search_name):
 
-    print("Opening model: " + search_name)
+    print("Opening the model: " + search_name)
 
-    if search_name[:1] == "/":
+    # Normalize the slashes to the correct kind for the current OS
+    search_name = Path(search_name).as_posix()
+
+    if search_name.startswith("/"):
         search_name = search_name[1:]
 
-    root_path = os.getcwd()
-    filename = os.path.join(root_path, "models", "Lora", search_name)
-    
-    if(not os.path.isfile(filename)):
-        print("Model at " + filename + "no longer exists!")
+    root_path = Path.cwd()
+    filename = root_path / "models" / "Lora" / search_name
+
+    if not filename.is_file():
+        print(f"Model at {filename} no longer exists!")
         return
 
-    name = os.path.splitext(os.path.basename(filename))[0] # name is just base filename without extension
+    name = filename.stem  # name is just base filename without extension
     
     # use webui hash function to get cacheing
     model_hash = str(hashes.sha256(filename, "lora/" + name, use_addnet_hash=False)) # civitai wants regular hash
@@ -52,8 +56,10 @@ def get_model_id_from_hash(model_hash):
     if('modelId' in response):
         modelId = str(response['modelId'])
         versionId = str(response['id'])
+        
+        title = str(response['model']['name'])
     
-        print("Found Model ID: " + modelId + " : " + versionId )
+        print("Found " + title[:20] + " ID: " + modelId + " : " + versionId )
         return (modelId, versionId)
     else:
         print("Model not found in CivitAi DB")
